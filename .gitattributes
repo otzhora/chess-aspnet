@@ -1,0 +1,10 @@
+###############################################################################
+# Set default behavior to automatically normalize line endings.
+###############################################################################
+# This settings sets EOL endings to default
+# Value LF sets one line ending in system-ignorant style: first - for checkouts, second - for commits
+* text=auto eol=lf
+* text=auto eol=lf
+*.xsl text eol=crlf 
+*.xslx text eol=crlf
+
