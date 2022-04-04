@@ -11,6 +11,20 @@ public class Piece
         Color = color;
     }
 
+    public Piece(char piece)
+    {
+        Type = piece switch
+        {
+            'p' or 'P' => PieceType.Pawn,
+            'n' or 'N' => PieceType.Knight,
+            'b' or 'B' => PieceType.Bishop,
+            'r' or 'R' => PieceType.Rook,
+            'q' or 'Q' => PieceType.Queen,
+            'k' or 'K' => PieceType.King,
+        };
+        Color = Char.IsUpper(piece) ? Color.White : Color.Black;
+    }
+    
     public override string ToString()
     {
         var letter = Type switch
@@ -22,6 +36,6 @@ public class Piece
             PieceType.Queen => "q",
             PieceType.King => "k"
         };
-        return Color == Color.White ? letter.ToLower() : letter.ToUpper();
+        return Color == Color.Black ? letter.ToLower() : letter.ToUpper();
     }
 }
