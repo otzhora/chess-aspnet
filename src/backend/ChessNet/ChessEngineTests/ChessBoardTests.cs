@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using ChessEngine.Board;
 using ChessEngine.Configuration;
 using ChessEngine.Models;
+using ChessEngine.Serializers;
 using NUnit.Framework;
 
 namespace ChessEngineTests;
@@ -30,14 +30,15 @@ public class Tests
     public void CreateBoardFromFenTest()
     {
         var config = new BoardConfig();
-        var board = new ChessBoard(config, "rnbqkb1r/p4ppp/1pp2n2/3pp3/2B1P3/2N2N2/PPPP1PPP/R1BQ1RK1 w kq d6 0 6");
+        var board = ChessBoardFenSerializer.Desirialize(config, "rnbqkb1r/p4ppp/1pp2n2/3pp3/2B1P3/2N2N2/PPPP1PPP/R1BQ1RK1 w kq d6 0 6");
         var expected =
             "8 r n b q k b * r \n7 p * # * # p p p \n6 * p p # * n * # \n5 # * # p p * # * \n4 * # B # P # * # \n3 # * N * # N # * \n2 P P P P * P P P \n1 R * B Q # R K * \n  A B C D E F G H ";
         Assert.AreEqual(expected, board.ToString());
         Assert.AreEqual(Color.White, board.ActiveColor);
         var expectedCastling = new List<Castling>() { Castling.BlackShort, Castling.BlackLong };
         Assert.AreEqual(expectedCastling, board.AvailableCastling);
-        Assert.AreEqual((2, 3), board.EnPassant);
+        var expectedEnPassant = new Coordinates(2, 3);
+        Assert.AreEqual(expectedEnPassant, board.EnPassant);
         Assert.AreEqual(0, board.HalfMoveClock);
         Assert.AreEqual(6, board.FullMoveCount);
     }
