@@ -1,14 +1,16 @@
 ﻿namespace ChessEngine.Models;
 
-public class Piece
+public class Piece : IEquatable<Piece>
 {
     public PieceType Type { get; }
     public Color Color { get; }
+    public bool Moved { get; set; }
 
     public Piece(PieceType type, Color color)
     {
         Type = type;
         Color = color;
+        Moved = false;
     }
 
     public Piece(char piece)
@@ -37,5 +39,25 @@ public class Piece
             PieceType.King => "k"
         };
         return Color == Color.Black ? letter.ToLower() : letter.ToUpper();
+    }
+
+    public bool Equals(Piece? other)
+    {
+        if (ReferenceEquals(null, other)) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return Type == other.Type && Color == other.Color && Moved == other.Moved;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((Piece)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine((int)Type, (int)Color, Moved);
     }
 }

@@ -12,6 +12,13 @@ public class Coordinates : IEquatable<Coordinates>
         Row = row;
         Col = col;
     }
+    
+    public Coordinates(Coordinates other)
+    {
+        Row = other.Row;
+        Col = other.Col;
+    }
+
 
     public Coordinates(string coordinates)
     {

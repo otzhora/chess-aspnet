@@ -48,9 +48,9 @@ public static class ChessBoardFenSerializer
         return activeColor == "w" ? Color.White : Color.Black;
     }
 
-    private static List<Castling> GetCastlings(string castlings)
+    private static HashSet<Castling> GetCastlings(string castlings)
     {
-        var availableCastling = new List<Castling>();
+        var availableCastling = new HashSet<Castling>();
         if (castlings == "-") return availableCastling;
         if (castlings.Contains("K")) availableCastling.Add(Castling.WhiteShort);
         if (castlings.Contains("Q")) availableCastling.Add(Castling.WhiteLong);
@@ -80,7 +80,10 @@ public static class ChessBoardFenSerializer
                 }
                 else
                 {
-                    board.SetSquare(row, col, new Piece(item));
+                    var piece = new Piece(item);
+                    var coordinates = new Coordinates(row, col);
+                    piece.Moved = HavePawnMoved(coordinates, piece);
+                    board.SetSquare(coordinates, new Piece(item));
                     col++;
                 }
             }
@@ -90,5 +93,13 @@ public static class ChessBoardFenSerializer
         }
 
         return board;
+    }
+
+    private static bool HavePawnMoved(Coordinates coordinates, Piece piece)
+    {
+        if (piece.Type != PieceType.Pawn) return false;
+        if (piece.Color == Color.White && coordinates.Row == 6) return false;
+        if (piece.Color == Color.Black && coordinates.Row == 1) return false;
+        return true;
     }
 }

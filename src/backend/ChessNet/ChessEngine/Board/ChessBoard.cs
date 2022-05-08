@@ -1,6 +1,8 @@
 ﻿using ChessEngine.Configuration;
 using ChessEngine.Models;
+using ChessEngine.MoveProviders;
 using ChessEngine.Serializers;
+using ChessEngine.Validators;
 
 namespace ChessEngine.Board;
 
@@ -10,7 +12,7 @@ public class ChessBoard : IChessBoard
     public Dictionary<Coordinates, BoardSquare> Board { get; set; }
     public BoardConfig Config { get; }
     public Color ActiveColor { get; set; }
-    public List<Castling> AvailableCastling { get; set; }
+    public HashSet<Castling> AvailableCastling { get; set; }
     public Coordinates? EnPassant { get; set; }
     public int HalfMoveClock { get; set; }
     public int FullMoveCount { get; set; }
@@ -19,7 +21,7 @@ public class ChessBoard : IChessBoard
     {
         Config = config;
         Board = CreateBoard();
-        AvailableCastling = new List<Castling>();
+        AvailableCastling = new HashSet<Castling>();
         ActiveColor = Color.White;
         EnPassant = null;
         HalfMoveClock = 0;
@@ -44,6 +46,40 @@ public class ChessBoard : IChessBoard
         Board[boardCoordinates].Piece = piece;
     }
 
+    public bool MakeMove(Move move)
+    {
+        if (MoveValidator.ValidateMove(this, move))
+            return false;
+        
+        SetSquare(move.From, null);
+        SetSquare(move.To, move.Piece);
+        move.Piece.Moved = true;
+        ActiveColor = ActiveColor == Color.White ? Color.Black : Color.White;
+        return true;
+    }
+
+    public IEnumerable<Coordinates> GetAttackers(Coordinates targetCoordinates)
+    {
+        foreach (var (from, square) in Board)
+        {
+            if (square.Piece == null) continue;
+            var targetSquareAttacked = MoveProvider.AttacksSquare(this, from, targetCoordinates, square.Piece);
+            if (targetSquareAttacked)
+                yield return from;
+        }
+    }
+
+    public IEnumerable<Coordinates> GetAttackers(Coordinates targetCoordinates, Color targetColor)
+    {
+        foreach (var (from, square) in Board)
+        {
+            if (square.Piece == null || square.Piece.Color != targetColor) continue;
+            var targetSquareAttacked = MoveProvider.AttacksSquare(this, from, targetCoordinates, square.Piece);
+            if (targetSquareAttacked)
+                yield return from;
+        }
+    }
+    
     public override string ToString()
     {
         return ChessBoardStringSerializer.Serialize(Config, this);
