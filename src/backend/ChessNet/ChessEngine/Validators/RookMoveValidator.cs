@@ -31,6 +31,7 @@ public static class RookMoveValidator
 
     private static bool ApplyGeometricRule(ChessBoard board, Move move)
     {
-        return Math.Abs(move.From.Col - move.To.Col) == Math.Abs(move.From.Row - move.To.Row);
+        return Math.Abs(move.From.Col - move.To.Col) == 0 
+            || Math.Abs(move.From.Row - move.To.Row) == 0;
     }
 }

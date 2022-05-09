@@ -5,22 +5,24 @@ public class Move : IEquatable<Move>
     public Coordinates From { get; }
     public Coordinates To { get; }
     public Piece Piece { get; }
-    public Color Color { get; }
     public SpecialMove? SpecialMove { get; }
 
-    public Move(Coordinates from, Coordinates to, Piece piece, Color color)
+    public Move(Coordinates from, Coordinates to, Piece piece, SpecialMove? specialMove)
     {
         From = from;
         To = to;
         Piece = piece;
-        Color = color;
+        SpecialMove = specialMove;
     }
 
     public bool Equals(Move? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
-        return From.Equals(other.From) && To.Equals(other.To) && Piece.Equals(other.Piece) && Color == other.Color;
+        return From.Equals(other.From) 
+            && To.Equals(other.To) 
+            && Piece.Equals(other.Piece) 
+            && SpecialMove == other.SpecialMove;
     }
 
     public override bool Equals(object? obj)
@@ -33,6 +35,6 @@ public class Move : IEquatable<Move>
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(From, To, Piece, (int)Color);
+        return HashCode.Combine(From, To, Piece);
     }
 }

@@ -6,27 +6,28 @@ namespace ChessEngine.Board;
 public class BoardSquare
 {
     public Piece? Piece { get; set; }
-    public Color Color { get; }
+    public Color SquareColor { get; }
 
-    public BoardSquare(Color color)
+    public BoardSquare(Color squareColor)
     {
-        Color = color;
+        SquareColor = squareColor;
         Piece = null;
     }
 
-    public BoardSquare(Color color, Piece piece)
+    public BoardSquare(Color squareColor, Piece piece)
     {
-        Color = color;
+        SquareColor = squareColor;
         Piece = piece;
     }
 
     public override string ToString()
     {
         if (Piece != null) return Piece.ToString();
-        return Color switch
+        return SquareColor switch
         {
             Color.Black => "#",
-            Color.White => "*"
+            Color.White => "*",
+            _ => "_"
         };
     }
 } 

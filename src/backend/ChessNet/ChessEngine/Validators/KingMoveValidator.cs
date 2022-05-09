@@ -22,7 +22,7 @@ public static class KingMoveValidator
     
     private static bool ApplyTargetNotProtectedRule(ChessBoard board, Move move)
     {
-        var opponentColor = move.Color == Color.White ? Color.Black : Color.White;
+        var opponentColor = move.Piece.Color == Color.White ? Color.Black : Color.White;
         return !board.GetAttackers(move.To, opponentColor).Any();
     }
     
@@ -34,7 +34,7 @@ public static class KingMoveValidator
         if (!board.AvailableCastling.Contains(castlingType)) return false;
         if (CastlingRookHaveMoved(board, castlingType)) return false;
         
-        var opponentColor = move.Color == Color.White ? Color.Black : Color.White;
+        var opponentColor = move.Piece.Color == Color.White ? Color.Black : Color.White;
         if (GetRookSquareAttacked(board, castlingType, opponentColor)) return false;
         return true;
     }
@@ -74,7 +74,7 @@ public static class KingMoveValidator
     private static Castling GetCastlingType(Move move)
     {
         Coordinates shortDest, longDest;
-        if (move.Color == Color.White)
+        if (move.Piece.Color == Color.White)
         {
             shortDest = new Coordinates(7, 6);
             if (move.To.Equals(shortDest)) return Castling.WhiteShort;

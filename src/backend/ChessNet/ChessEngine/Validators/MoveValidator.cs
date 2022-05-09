@@ -20,7 +20,15 @@ public static class MoveValidator
         if (!ApplyPieceColorRule(board, move)) return false;
         if (!ApplyPiecePresentRule(board, move)) return false;
         if (!ApplyCoordinatesRule(board, move)) return false;
+        if (!ApplyEnemyPieceAtTargetRule(board, move)) return false;
         return true;
+    }
+
+    private static bool ApplyEnemyPieceAtTargetRule(ChessBoard board, Move move)
+    {
+        var pieceAtTarget = board[move.To].Piece;
+        if (pieceAtTarget == null) return true;
+        return pieceAtTarget.Color != move.Piece.Color;
     }
 
     private static bool ApplyPiecePresentRule(ChessBoard board, Move move)
@@ -45,11 +53,14 @@ public static class MoveValidator
 
     private static bool ApplyMoveTurnRule(ChessBoard board, Move move)
     {
-        return board.ActiveColor == move.Color;
+        return board.ActiveColor == move.Piece.Color;
     }
 
     private static bool ApplyPieceRules(ChessBoard board, Move move)
     {
+        if (board[move.From].Piece == null || move.Piece != board[move.From].Piece)
+            return false;
+
         switch (move.Piece.Type)
         {
             case PieceType.Pawn:
