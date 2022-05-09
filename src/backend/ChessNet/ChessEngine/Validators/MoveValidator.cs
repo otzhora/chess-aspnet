@@ -1,5 +1,6 @@
 ﻿using ChessEngine.Board;
 using ChessEngine.Models;
+using ChessEngine.MoveProviders;
 
 namespace ChessEngine.Validators;
 
@@ -17,10 +18,38 @@ public static class MoveValidator
     private static bool ApplyGeneralRules(ChessBoard board, Move move)
     {
         if (!ApplyMoveTurnRule(board, move)) return false;
-        if (!ApplyPieceColorRule(board, move)) return false;
         if (!ApplyPiecePresentRule(board, move)) return false;
         if (!ApplyCoordinatesRule(board, move)) return false;
         if (!ApplyEnemyPieceAtTargetRule(board, move)) return false;
+        if (!ApplyKingNotInCheckRule(board, move)) return false;
+        return true;
+    }
+
+    private static bool ApplyKingNotInCheckRule(ChessBoard board, Move move)
+    {
+        // TODO: consider cases when more than one piece should dissapear
+        if (move.Piece.Type == PieceType.King) 
+            return true;
+        Coordinates kingCoordinates = null!;
+        foreach(var (coords, square) in board.Board) {
+            if (square.Piece != null 
+                && square.Piece.Type == PieceType.King
+                && square.Piece.Color == move.Piece.Color) {
+                    kingCoordinates = coords;
+                    break;
+                }
+        }
+
+        board.SetSquare(move.From, null);
+
+        foreach (var (coords, square) in board.Board) {
+            if (square.Piece != null 
+                && MoveProvider.AttacksSquare(board, coords, kingCoordinates, square.Piece)) {
+                return false;
+            }
+        }
+
+        board.SetSquare(move.From, move.Piece);
         return true;
     }
 
@@ -35,11 +64,6 @@ public static class MoveValidator
     {
         if (board[move.From].Piece == null) return false;
         return board[move.From].Piece!.Equals(move.Piece);
-    }
-
-    private static bool ApplyPieceColorRule(ChessBoard board, Move move)
-    {
-        return move.Piece.Color == board.ActiveColor;
     }
 
     private static bool ApplyCoordinatesRule(ChessBoard board, Move move)
@@ -58,7 +82,7 @@ public static class MoveValidator
 
     private static bool ApplyPieceRules(ChessBoard board, Move move)
     {
-        if (board[move.From].Piece == null || move.Piece != board[move.From].Piece)
+        if (board[move.From].Piece == null || !move.Piece.Equals(board[move.From].Piece))
             return false;
 
         switch (move.Piece.Type)

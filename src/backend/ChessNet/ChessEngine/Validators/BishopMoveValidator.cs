@@ -15,8 +15,8 @@ public static class BishopMoveValidator
     private static bool ApplyNoPiecesBeforeTargetRule(ChessBoard board, Move move)
     {
         var distance = Math.Abs(move.From.Col - move.To.Col);
-        var rowInc = (move.From.Row - move.To.Row) / distance;
-        var colInc = (move.From.Col - move.To.Col) / distance;
+        var rowInc = (move.To.Row - move.From.Row) / distance;
+        var colInc = (move.To.Col - move.From.Col) / distance;
 
         var currentCoordinate = new Coordinates(move.From);
         for (var i = 0; i < distance - 1; i++)
